@@ -2,11 +2,8 @@ package com.sbouhaddi.fileManagement.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -19,43 +16,30 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.stereotype.Component;
 
 @Component
 public class EncryptionUtils {
 
-	public static void generateAndSaveKey(String keyFile)
-			throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+	private static SecretKey key;
+	private static IvParameterSpec iv;
+
+	public static void init() throws NoSuchAlgorithmException {
 		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-		SecretKey key = keyGen.generateKey();
-		try (FileOutputStream out = new FileOutputStream(keyFile)) {
-			byte[] keyb = key.getEncoded();
-			out.write(keyb);
-		}
-		;
+		key = keyGen.generateKey();
+
+		byte[] ivByte = new byte[16];
+		new SecureRandom().nextBytes(ivByte);
+		iv = new IvParameterSpec(ivByte);
 	}
 
-	public static SecretKey getKey(String keyFile) throws IOException {
-		byte[] keyb = Files.readAllBytes(Paths.get(keyFile));
-		SecretKey skey = new SecretKeySpec(keyb, "AES");
-		return skey;
+	public static SecretKey getKey() {
+		return key;
 	}
 
-	public static void generateAndSaveIv(String ivFile) throws FileNotFoundException, IOException {
-		byte[] iv = new byte[16];
-		new SecureRandom().nextBytes(iv);
-		try (FileOutputStream out = new FileOutputStream(ivFile)) {
-			out.write(iv);
-		}
-		;
-	}
-
-	public static IvParameterSpec getIv(String ivFile) throws FileNotFoundException, IOException {
-
-		byte[] iv = Files.readAllBytes(Paths.get(ivFile));
-		return new IvParameterSpec(iv);
+	public static IvParameterSpec getIv() {
+		return iv;
 	}
 
 	public static void processFile(int encryptMode, SecretKey key, IvParameterSpec iv, File inputFile, File outputFile)

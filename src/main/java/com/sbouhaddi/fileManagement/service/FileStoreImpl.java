@@ -18,6 +18,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -27,39 +28,46 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sbouhaddi.fileManagement.Utils.EncryptionUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class FileStoreImpl implements FileStore {
 
-	private final Path store = Paths.get("files");
-	private final Path keyStore = Paths.get("keys");
+	@Value("${files.local.store}")
+    private String localStorePath;
+	private Path store;
+	private SecretKey key;
+	private IvParameterSpec iv;
 
 	@Override
 	public void init() throws IOException, NoSuchAlgorithmException {
+		
+		store = Paths.get(localStorePath);
+		log.info("FILES STORE " + store.toString());
 		if (!Files.exists(store)) {
 			Files.createDirectories(store);
 		}
-		if (!Files.exists(keyStore)) {
-			Files.createDirectories(keyStore);
-		}
-		EncryptionUtils.generateAndSaveKey(keyStore.toString() + "/keyFile");
-		EncryptionUtils.generateAndSaveIv(keyStore.toString() + "/ivFile");
+		EncryptionUtils.init();
+		iv = EncryptionUtils.getIv();
+		key = EncryptionUtils.getKey();
 
 	}
 
 	@Override
 	public void save(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException,
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-
+		
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-		Path inputTargetLocation = store.resolve(fileName);
-		Path outputTargetLocation = store.resolve("encoded_" + fileName);
+		Path inputTargetLocation = Files.createTempFile(fileName, "");
+		Path outputTargetLocation = store.resolve(fileName);
 		Files.copy(file.getInputStream(), inputTargetLocation, StandardCopyOption.REPLACE_EXISTING);
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
-		SecretKey key = EncryptionUtils.getKey(keyStore.toString() + "/keyFile");
-		IvParameterSpec iv = EncryptionUtils.getIv(keyStore.toString() + "/ivFile");
+
 		EncryptionUtils.processFile(Cipher.ENCRYPT_MODE, key, iv, inputFile, outputFile);
-		
+		log.info("FILE ENCRYPTED IN  " + outputFile.toPath());
+		Files.delete(inputTargetLocation);
 
 	}
 
@@ -67,21 +75,18 @@ public class FileStoreImpl implements FileStore {
 	public Resource download(String fileName)
 			throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException,
 			InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
-		Path inputTargetLocation = store.resolve("encoded_" + fileName);
-		Path outputTargetLocation = store.resolve(fileName);
+		Path inputTargetLocation = store.resolve(fileName);
+		Path outputTargetLocation = store.resolve(Files.createTempFile(fileName, ""));
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
-		SecretKey key = EncryptionUtils.getKey(keyStore.toString() + "/keyFile");
-		IvParameterSpec iv = EncryptionUtils.getIv(keyStore.toString() + "/ivFile");
 		EncryptionUtils.processFile(Cipher.DECRYPT_MODE, key, iv, inputFile, outputFile);
-
+		log.info("FILE DECRYPTED IN  " + outputTargetLocation);
 		return new UrlResource(outputTargetLocation.toUri());
 	}
 
 	@Override
 	public void deleteAll() throws IOException {
 		FileSystemUtils.deleteRecursively(store);
-		FileSystemUtils.deleteRecursively(keyStore);
 
 	}
 

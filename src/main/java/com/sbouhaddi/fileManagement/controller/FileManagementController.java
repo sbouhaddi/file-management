@@ -30,8 +30,8 @@ import com.sbouhaddi.fileManagement.service.FileStore;
 
 import lombok.RequiredArgsConstructor;
 
-@RestController()
-@RequestMapping("/files")
+@RestController
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @CrossOrigin("http://localhost:8081")
 public class FileManagementController {
@@ -54,8 +54,9 @@ public class FileManagementController {
 	public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
 		try {
 			Resource downloadedFile = fileStore.download(filename);
-			return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-					"attachement; filename = \"" + downloadedFile.getFilename() + "\"").body(downloadedFile);
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachement; filename = \"" + filename + "\"")
+					.body(downloadedFile);
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
 				| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException
 				| IOException e) {
@@ -64,18 +65,18 @@ public class FileManagementController {
 
 	}
 
-	@GetMapping("")
+	@GetMapping("/files")
 	public ResponseEntity<List<FileDetails>> getListFiles() {
 		;
 		try {
-			List<FileDetails> fileDetails = fileStore.getFiles()
-					.filter(file -> !file.getFileName().toString().contains("encoded")).map(path -> {
-						String filename = path.getFileName().toString();
-						String url = MvcUriComponentsBuilder.fromMethodName(FileManagementController.class,
-								"downloadFile", path.getFileName().toString()).build().toString();
-						return new FileDetails(filename, url);
+			List<FileDetails> fileDetails = fileStore.getFiles().map(path -> {
+				String filename = path.getFileName().toString();
+				String url = MvcUriComponentsBuilder
+						.fromMethodName(FileManagementController.class, "downloadFile", path.getFileName().toString())
+						.build().toString();
+				return new FileDetails(filename, url);
 
-					}).collect(Collectors.toList());
+			}).collect(Collectors.toList());
 			return ResponseEntity.ok(fileDetails);
 		} catch (IOException e) {
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();

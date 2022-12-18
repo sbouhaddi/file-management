@@ -1,57 +1,67 @@
 package com.sbouhaddi.fileManagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.web.servlet.MockMvc;
 
-import com.sbouhaddi.fileManagement.Utils.EncryptionUtils;
+import com.sbouhaddi.fileManagement.controller.FileManagementController;
+import com.sbouhaddi.fileManagement.service.FileStore;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class FileManagementApplicationTests {
+
+	@Autowired
+	private MockMvc mvc;
+
+	@Autowired
+	private FileManagementController controller;
+
+	@MockBean
+	private FileStore fileStore;
 
 	@Test
 	void contextLoads() {
+		assertThat(controller).isNotNull();
 	}
 
 	@Test
-	void encrypt_decrypt_file_succeed() throws NoSuchAlgorithmException, IOException, InvalidKeyException,
-			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+	public void should_list_all_files() throws Exception {
+		given(this.fileStore.getFiles()).willReturn(Stream.of(Paths.get("first.txt"), Paths.get("second.txt")));
 
-		Path path = Paths.get("tests");
-		Path keyStore = Paths.get("keys");
+		this.mvc.perform(get("/api/v1/files")).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.[0].name").value("first.txt"))
+				.andExpect(jsonPath("$.[0].url").value("http://localhost/api/v1/download/first.txt"))
+				.andExpect(jsonPath("$.[1].name").value("second.txt"))
+				.andExpect(jsonPath("$.[1].url").value("http://localhost/api/v1/download/second.txt"));
+	}
 
-		SecretKey key = EncryptionUtils.getKey(keyStore.toString() + "/keyFile");
-		IvParameterSpec iv = EncryptionUtils.getIv(keyStore.toString() + "/ivFile");
+	@Test
+	public void should_upload_file() throws Exception {
+		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt", "text/plain",
+				"File to encode".getBytes());
+		this.mvc.perform(multipart("/api/v1/upload").file(multipartFile)).andExpect(status().isOk())
+				.andExpect(content().string("File Uploaded !test.txt"));
 
-		Path file = path.resolve("inputFile.txt");
-		File inputFile = file.toFile();
-		File encryptedFile = new File("file.encrypted");
-		File decryptedFile = new File("file.decrypted");
-
-		EncryptionUtils.processFile(Cipher.ENCRYPT_MODE, key, iv, inputFile, encryptedFile);
-		EncryptionUtils.processFile(Cipher.DECRYPT_MODE, key, iv, encryptedFile, decryptedFile);
-
-		assertThat(inputFile).hasSameTextualContentAs(decryptedFile);
-
-		encryptedFile.delete();
-		decryptedFile.delete();
-
+		then(this.fileStore).should().save(multipartFile);
 	}
 
 }
