@@ -64,4 +64,13 @@ class FileManagementApplicationTests {
 		then(this.fileStore).should().save(multipartFile);
 	}
 
+	@Test
+	public void should_download_file() throws Exception {
+		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt", "text/plain",
+				"File to encode".getBytes());
+		this.mvc.perform(get("/api/v1/download/" + multipartFile.getName())).andExpect(status().isOk());
+
+		then(this.fileStore).should().download(multipartFile.getName());
+	}
+
 }

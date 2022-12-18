@@ -14,8 +14,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,16 +29,13 @@ public class EncryptDecryptFileTest {
 
 		Path path = Paths.get("tests");
 
-		SecretKey key = EncryptionUtils.getKey();
-		IvParameterSpec iv = EncryptionUtils.getIv();
-
 		Path file = path.resolve("inputFile.txt");
 		File inputFile = file.toFile();
 		File encryptedFile = new File("file.encrypted");
 		File decryptedFile = new File("file.decrypted");
 
-		EncryptionUtils.processFile(Cipher.ENCRYPT_MODE, key, iv, inputFile, encryptedFile);
-		EncryptionUtils.processFile(Cipher.DECRYPT_MODE, key, iv, encryptedFile, decryptedFile);
+		EncryptionUtils.processFile(Cipher.ENCRYPT_MODE, inputFile, encryptedFile);
+		EncryptionUtils.processFile(Cipher.DECRYPT_MODE, encryptedFile, decryptedFile);
 
 		assertThat(inputFile).hasSameTextualContentAs(decryptedFile);
 

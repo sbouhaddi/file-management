@@ -42,7 +42,7 @@ public class EncryptionUtils {
 		return iv;
 	}
 
-	public static void processFile(int encryptMode, SecretKey key, IvParameterSpec iv, File inputFile, File outputFile)
+	public static void processFile(int encryptMode, File inputFile, File outputFile)
 			throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
 			InvalidAlgorithmParameterException, IOException, IllegalBlockSizeException, BadPaddingException {
 

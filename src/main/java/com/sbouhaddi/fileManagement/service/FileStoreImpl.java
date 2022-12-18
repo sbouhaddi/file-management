@@ -15,8 +15,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -35,29 +33,25 @@ import lombok.extern.slf4j.Slf4j;
 public class FileStoreImpl implements FileStore {
 
 	@Value("${files.local.store}")
-    private String localStorePath;
+	private String localStorePath;
 	private Path store;
-	private SecretKey key;
-	private IvParameterSpec iv;
 
 	@Override
 	public void init() throws IOException, NoSuchAlgorithmException {
-		
+
 		store = Paths.get(localStorePath);
 		log.info("FILES STORE " + store.toString());
 		if (!Files.exists(store)) {
 			Files.createDirectories(store);
 		}
 		EncryptionUtils.init();
-		iv = EncryptionUtils.getIv();
-		key = EncryptionUtils.getKey();
 
 	}
 
 	@Override
 	public void save(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException,
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-		
+
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 		Path inputTargetLocation = Files.createTempFile(fileName, "");
 		Path outputTargetLocation = store.resolve(fileName);
@@ -65,7 +59,7 @@ public class FileStoreImpl implements FileStore {
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
 
-		EncryptionUtils.processFile(Cipher.ENCRYPT_MODE, key, iv, inputFile, outputFile);
+		EncryptionUtils.processFile(Cipher.ENCRYPT_MODE, inputFile, outputFile);
 		log.info("FILE ENCRYPTED IN  " + outputFile.toPath());
 		Files.delete(inputTargetLocation);
 
@@ -79,7 +73,7 @@ public class FileStoreImpl implements FileStore {
 		Path outputTargetLocation = store.resolve(Files.createTempFile(fileName, ""));
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
-		EncryptionUtils.processFile(Cipher.DECRYPT_MODE, key, iv, inputFile, outputFile);
+		EncryptionUtils.processFile(Cipher.DECRYPT_MODE, inputFile, outputFile);
 		log.info("FILE DECRYPTED IN  " + outputTargetLocation);
 		return new UrlResource(outputTargetLocation.toUri());
 	}

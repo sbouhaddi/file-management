@@ -1,5 +1,12 @@
-{"properties": [{
-  "name": "files.local.store",
-  "type": "java.lang.String",
-  "description": "A description for 'files.local.store'"
-}]}
+{"properties": [
+  {
+    "name": "files.local.store",
+    "type": "java.lang.String",
+    "description": "A description for 'files.local.store'"
+  },
+  {
+    "name": "springdoc.version",
+    "type": "java.lang.String",
+    "description": "A description for 'springdoc.version'"
+  }
+]}
