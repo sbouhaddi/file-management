@@ -15,7 +15,10 @@ jobs:
     steps:
       - checkout
       - run: java --version
-      
+      - run:
+          name: Analyze on SonarCloud
+          command: mvn verify sonar:sonar -Dsonar.projectKey=sbouhaddi_file-management
+
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -37,16 +40,8 @@ jobs:
 
       - store_test_results:
           path: target/surefire-reports
-          
-      - run:
-          name: Configure sonar projectBaseDir
-          command: cp -R ~/repo /Users/distiller
-      - run:
-          name: Copy code coverage file
-          command: cp target/surefire-reports/*.xml /Users/distiller/project
-      - run:
-          name: Analyze on SonarCloud
-          command: mvn verify sonar:sonar -Dsonar.projectKey=sbouhaddi_file-management    
+      - store_artifacts:
+          path:  target
 workflows:
   main:
     jobs:
