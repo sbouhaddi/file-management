@@ -24,7 +24,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sbouhaddi.fileencryption.Utils.EncryptionUtils;
+import com.sbouhaddi.fileencryption.utils.EncryptionUtils;
 
 import lombok.extern.slf4j.Slf4j;
 

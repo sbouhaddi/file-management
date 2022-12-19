@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileencryption.exceptionHandler;
+package com.sbouhaddi.fileencryption.exceptionhandler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
