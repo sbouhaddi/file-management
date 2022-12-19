@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement.model;
+package com.sbouhaddi.fileencryption.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

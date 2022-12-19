@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement.service;
+package com.sbouhaddi.fileencryption.service;
 
 import java.io.IOException;
 import java.nio.file.Path;

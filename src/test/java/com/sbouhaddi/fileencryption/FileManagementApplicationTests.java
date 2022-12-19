@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement;
+package com.sbouhaddi.fileencryption;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -21,8 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.sbouhaddi.fileManagement.controller.FileManagementController;
-import com.sbouhaddi.fileManagement.service.FileStore;
+import com.sbouhaddi.fileencryption.controller.FileManagementController;
+import com.sbouhaddi.fileencryption.service.FileStore;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,7 +43,7 @@ class FileManagementApplicationTests {
 	}
 
 	@Test
-	public void should_list_all_files() throws Exception {
+	void should_list_all_files() throws Exception {
 		given(this.fileStore.getFiles()).willReturn(Stream.of(Paths.get("first.txt"), Paths.get("second.txt")));
 
 		this.mvc.perform(get("/api/v1/files")).andExpect(status().isOk())
@@ -55,7 +55,7 @@ class FileManagementApplicationTests {
 	}
 
 	@Test
-	public void should_upload_file() throws Exception {
+	void should_upload_file() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt", "text/plain",
 				"File to encode".getBytes());
 		this.mvc.perform(multipart("/api/v1/upload").file(multipartFile)).andExpect(status().isOk())
@@ -65,7 +65,7 @@ class FileManagementApplicationTests {
 	}
 
 	@Test
-	public void should_download_file() throws Exception {
+	void should_download_file() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt", "text/plain",
 				"File to encode".getBytes());
 		this.mvc.perform(get("/api/v1/download/" + multipartFile.getName())).andExpect(status().isOk());

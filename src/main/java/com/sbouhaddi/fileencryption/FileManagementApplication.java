@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement;
+package com.sbouhaddi.fileencryption;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

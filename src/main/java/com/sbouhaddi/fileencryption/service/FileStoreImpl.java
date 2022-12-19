@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement.service;
+package com.sbouhaddi.fileencryption.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sbouhaddi.fileManagement.Utils.EncryptionUtils;
+import com.sbouhaddi.fileencryption.Utils.EncryptionUtils;
 
 import lombok.extern.slf4j.Slf4j;
 

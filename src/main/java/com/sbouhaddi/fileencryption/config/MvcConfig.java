@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement.config;
+package com.sbouhaddi.fileencryption.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

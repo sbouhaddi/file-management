@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement.controller;
+package com.sbouhaddi.fileencryption.controller;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import com.sbouhaddi.fileManagement.model.FileDetails;
-import com.sbouhaddi.fileManagement.service.FileStore;
+import com.sbouhaddi.fileencryption.model.FileDetails;
+import com.sbouhaddi.fileencryption.service.FileStore;
 
 import lombok.RequiredArgsConstructor;
 
@@ -68,7 +68,6 @@ public class FileManagementController {
 
 	@GetMapping("/files")
 	public ResponseEntity<List<FileDetails>> getListFiles() {
-		;
 		try {
 			List<FileDetails> fileDetails = fileStore.getFiles().map(path -> {
 				String filename = path.getFileName().toString();

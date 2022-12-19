@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement.init;
+package com.sbouhaddi.fileencryption.init;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.sbouhaddi.fileManagement.service.FileStore;
+import com.sbouhaddi.fileencryption.service.FileStore;
 
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;

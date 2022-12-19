@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement.Utils;
+package com.sbouhaddi.fileencryption.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +27,9 @@ public class EncryptionUtils {
 
 	private static SecretKey key;
 	private static IvParameterSpec iv;
+	
+	private EncryptionUtils() {
+	}
 
 	public static void init() throws NoSuchAlgorithmException {
 		KeyGenerator keyGen = KeyGenerator.getInstance(EncryptionConstants.AES.getValue());

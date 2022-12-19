@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileManagement;
+package com.sbouhaddi.fileencryption;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,10 +22,10 @@ import javax.crypto.NoSuchPaddingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.sbouhaddi.fileManagement.Utils.EncryptionUtils;
+import com.sbouhaddi.fileencryption.Utils.EncryptionUtils;
 
 @SpringBootTest
-public class EncryptDecryptFileTest {
+class EncryptDecryptFileTest {
 
 	@Test
 	void should_encrypt_decrypt_file_succeed() throws NoSuchAlgorithmException, IOException, InvalidKeyException,
