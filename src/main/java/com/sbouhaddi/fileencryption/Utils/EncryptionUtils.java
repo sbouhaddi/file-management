@@ -32,6 +32,8 @@ public class EncryptionUtils {
 	}
 
 	public static void init() throws NoSuchAlgorithmException {
+		
+		log.info("GENERATING KEY AND VECTOR ");
 		KeyGenerator keyGen = KeyGenerator.getInstance(EncryptionConstants.AES.getValue());
 		key = keyGen.generateKey();
 

@@ -52,6 +52,7 @@ public class FileStoreImpl implements FileStore {
 	public void save(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException,
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
+		log.info("UPLOAD STARTED  ");
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 		Path inputTargetLocation = Files.createTempFile(fileName, "");
 		Path outputTargetLocation = store.resolve(fileName);
@@ -69,11 +70,13 @@ public class FileStoreImpl implements FileStore {
 	public Resource download(String fileName)
 			throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException,
 			InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
+
+		log.info("DOWNLOAD STARTED  ");
 		Path inputTargetLocation = store.resolve(fileName);
 		Path outputTargetLocation = store.resolve(Files.createTempFile(fileName, ""));
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
-		
+
 		EncryptionUtils.processFile(Cipher.DECRYPT_MODE, inputFile, outputFile);
 		log.info("FILE DECRYPTED IN  " + outputTargetLocation);
 		outputFile.deleteOnExit();
@@ -82,12 +85,14 @@ public class FileStoreImpl implements FileStore {
 
 	@Override
 	public void deleteAll() throws IOException {
+		log.info("CLEANING STORE ");
 		FileSystemUtils.deleteRecursively(store);
 
 	}
 
 	@Override
 	public Stream<Path> getFiles() throws IOException {
+		log.info("LIST ALL FILES IN STORE ");
 		return Files.walk(store, 1).filter(path -> !path.equals(store)).map(store::relativize);
 	}
 
