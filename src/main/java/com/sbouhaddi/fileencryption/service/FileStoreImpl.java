@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,10 +52,11 @@ public class FileStoreImpl implements FileStore {
 	public void save(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException,
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
-		Assert.notNull(file, "file mustn't be null");
 		log.info("UPLOAD STARTED  ");
-
-		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		String fileName = "";
+		if (StringUtils.hasText(file.getOriginalFilename())) {
+			fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		}
 		Path inputTargetLocation = Files.createTempFile("input", ".tmp");
 		Path outputTargetLocation = store.resolve(fileName);
 		Files.copy(file.getInputStream(), inputTargetLocation, StandardCopyOption.REPLACE_EXISTING);
