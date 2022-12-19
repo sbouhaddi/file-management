@@ -76,9 +76,6 @@ public class EncryptionUtils {
 				if (outputBytes != null) {
 					outputStream.write(outputBytes);
 				}
-
-				inputStream.close();
-				outputStream.close();
 			}
 		}
 

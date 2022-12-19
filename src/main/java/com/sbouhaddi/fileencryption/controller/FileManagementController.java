@@ -26,7 +26,6 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import com.sbouhaddi.fileencryption.model.FileDetails;
 import com.sbouhaddi.fileencryption.service.FileStore;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -40,7 +39,7 @@ public class FileManagementController {
 	private final FileStore fileStore;
 
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
-	public ResponseEntity<String> uploadFile(@RequestParam("file") @NotNull  MultipartFile file) {
+	public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
 		try {
 			fileStore.save(file);
 			return ResponseEntity.ok("File Uploaded !" + file.getOriginalFilename());
@@ -52,7 +51,7 @@ public class FileManagementController {
 	}
 
 	@GetMapping("/download/{filename:.+}")
-	public ResponseEntity<Resource> downloadFile(@PathVariable  String filename) {
+	public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
 		try {
 			Resource downloadedFile = fileStore.download(filename);
 			return ResponseEntity.ok()

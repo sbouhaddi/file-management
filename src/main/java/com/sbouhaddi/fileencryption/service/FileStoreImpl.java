@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sbouhaddi.fileencryption.utils.EncryptionUtils;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -49,12 +50,12 @@ public class FileStoreImpl implements FileStore {
 	}
 
 	@Override
-	public void save(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException,
+	public void save(@NotNull MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException,
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
 		log.info("UPLOAD STARTED  ");
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-		Path inputTargetLocation = Files.createTempFile(fileName, "");
+		Path inputTargetLocation = Files.createTempFile("input", ".tmp");
 		Path outputTargetLocation = store.resolve(fileName);
 		Files.copy(file.getInputStream(), inputTargetLocation, StandardCopyOption.REPLACE_EXISTING);
 		File inputFile = inputTargetLocation.toFile();
@@ -67,13 +68,13 @@ public class FileStoreImpl implements FileStore {
 	}
 
 	@Override
-	public Resource download(String fileName)
+	public Resource download(@NotNull String fileName)
 			throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException,
 			InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
 
 		log.info("DOWNLOAD STARTED  ");
 		Path inputTargetLocation = store.resolve(fileName);
-		Path outputTargetLocation = store.resolve(Files.createTempFile(fileName, ""));
+		Path outputTargetLocation = store.resolve(Files.createTempFile("output", ".tmp"));
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
 
