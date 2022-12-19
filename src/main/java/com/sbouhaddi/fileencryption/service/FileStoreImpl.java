@@ -21,7 +21,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sbouhaddi.fileencryption.utilities.EncryptionUtils;
@@ -53,12 +52,8 @@ public class FileStoreImpl implements FileStore {
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
 		log.info("UPLOAD STARTED  ");
-		String fileName = "";
-		if (StringUtils.hasText(file.getOriginalFilename())) {
-			fileName = StringUtils.cleanPath(file.getOriginalFilename());
-		}
 		Path inputTargetLocation = Files.createTempFile("input", ".tmp");
-		Path outputTargetLocation = store.resolve(fileName);
+		Path outputTargetLocation = store.resolve(file.getOriginalFilename());
 		Files.copy(file.getInputStream(), inputTargetLocation, StandardCopyOption.REPLACE_EXISTING);
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
