@@ -22,7 +22,7 @@ import javax.crypto.NoSuchPaddingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.sbouhaddi.fileencryption.utils.EncryptionUtils;
+import com.sbouhaddi.fileencryption.utilities.EncryptionUtils;
 
 @SpringBootTest
 class EncryptDecryptFileTest {

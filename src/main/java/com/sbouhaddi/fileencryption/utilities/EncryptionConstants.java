@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileencryption.utils;
+package com.sbouhaddi.fileencryption.utilities;
 
 public enum EncryptionConstants {
 

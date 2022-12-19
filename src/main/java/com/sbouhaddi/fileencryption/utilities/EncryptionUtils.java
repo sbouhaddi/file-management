@@ -1,4 +1,4 @@
-package com.sbouhaddi.fileencryption.utils;
+package com.sbouhaddi.fileencryption.utilities;
 
 import java.io.File;
 import java.io.FileInputStream;

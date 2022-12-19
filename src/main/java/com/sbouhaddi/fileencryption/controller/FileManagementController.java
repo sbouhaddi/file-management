@@ -26,6 +26,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import com.sbouhaddi.fileencryption.model.FileDetails;
 import com.sbouhaddi.fileencryption.service.FileStore;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -51,7 +52,7 @@ public class FileManagementController {
 	}
 
 	@GetMapping("/download/{filename:.+}")
-	public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
+	public ResponseEntity<Resource> downloadFile(@PathVariable @NotBlank String filename) {
 		try {
 			Resource downloadedFile = fileStore.download(filename);
 			return ResponseEntity.ok()

@@ -20,13 +20,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sbouhaddi.fileencryption.utils.EncryptionUtils;
+import com.sbouhaddi.fileencryption.utilities.EncryptionUtils;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -50,10 +50,12 @@ public class FileStoreImpl implements FileStore {
 	}
 
 	@Override
-	public void save(@NotNull MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException,
+	public void save(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException,
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
+		Assert.notNull(file, "file mustn't be null");
 		log.info("UPLOAD STARTED  ");
+
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 		Path inputTargetLocation = Files.createTempFile("input", ".tmp");
 		Path outputTargetLocation = store.resolve(fileName);
@@ -68,7 +70,7 @@ public class FileStoreImpl implements FileStore {
 	}
 
 	@Override
-	public Resource download(@NotNull String fileName)
+	public Resource download(String fileName)
 			throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException,
 			InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
 
