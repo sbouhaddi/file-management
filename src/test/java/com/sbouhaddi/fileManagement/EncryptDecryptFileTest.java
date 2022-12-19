@@ -32,7 +32,7 @@ public class EncryptDecryptFileTest {
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
 		List<String> lines = Arrays.asList("The first line", "The second line");
-		Path file = Paths.get("inputFile.txt.txt");
+		Path file = Paths.get("inputFile.txt");
 		Files.write(file, lines, StandardCharsets.UTF_8);
 
 		File inputFile = file.toFile();
@@ -46,6 +46,7 @@ public class EncryptDecryptFileTest {
 
 		encryptedFile.delete();
 		decryptedFile.delete();
+		Files.deleteIfExists(file);
 
 	}
 

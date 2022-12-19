@@ -19,14 +19,17 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class EncryptionUtils {
 
 	private static SecretKey key;
 	private static IvParameterSpec iv;
 
 	public static void init() throws NoSuchAlgorithmException {
-		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+		KeyGenerator keyGen = KeyGenerator.getInstance(EncryptionConstants.AES.getValue());
 		key = keyGen.generateKey();
 
 		byte[] ivByte = new byte[16];
@@ -46,7 +49,9 @@ public class EncryptionUtils {
 			throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
 			InvalidAlgorithmParameterException, IOException, IllegalBlockSizeException, BadPaddingException {
 
-		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		log.info("PROCESSING FILE " + inputFile.getName());
+
+		Cipher cipher = Cipher.getInstance(EncryptionConstants.AES_CIPHER.getValue());
 		cipher.init(encryptMode, key, iv);
 		FileInputStream inputStream = new FileInputStream(inputFile);
 		FileOutputStream outputStream = new FileOutputStream(outputFile);
@@ -67,6 +72,8 @@ public class EncryptionUtils {
 
 		inputStream.close();
 		outputStream.close();
+
+		log.info("FILE PROCESSED SUCCESFULLY IN " + outputFile.getName());
 	}
 
 }
