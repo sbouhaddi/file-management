@@ -39,7 +39,7 @@ public class FileManagementController {
 
 	private final FileStore fileStore;
 
-	@PostMapping("/upload")
+	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
 	public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
 		try {
 			fileStore.save(file);
