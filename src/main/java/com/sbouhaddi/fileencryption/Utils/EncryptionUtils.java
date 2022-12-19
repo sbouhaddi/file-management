@@ -27,12 +27,12 @@ public class EncryptionUtils {
 
 	private static SecretKey key;
 	private static IvParameterSpec iv;
-	
+
 	private EncryptionUtils() {
 	}
 
 	public static void init() throws NoSuchAlgorithmException {
-		
+
 		log.info("GENERATING KEY AND VECTOR ");
 		KeyGenerator keyGen = KeyGenerator.getInstance(EncryptionConstants.AES.getValue());
 		key = keyGen.generateKey();
@@ -58,25 +58,29 @@ public class EncryptionUtils {
 
 		Cipher cipher = Cipher.getInstance(EncryptionConstants.AES_CIPHER.getValue());
 		cipher.init(encryptMode, key, iv);
-		FileInputStream inputStream = new FileInputStream(inputFile);
-		FileOutputStream outputStream = new FileOutputStream(outputFile);
-		byte[] buffer = new byte[64];
-		int bytesRead;
-		while ((bytesRead = inputStream.read(buffer)) != -1) {
-			byte[] output = cipher.update(buffer, 0, bytesRead);
-			if (output != null) {
-				outputStream.write(output);
+		try (FileInputStream inputStream = new FileInputStream(inputFile)) {
 
+			try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+
+				byte[] buffer = new byte[64];
+				int bytesRead;
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					byte[] output = cipher.update(buffer, 0, bytesRead);
+					if (output != null) {
+						outputStream.write(output);
+
+					}
+				}
+
+				byte[] outputBytes = cipher.doFinal();
+				if (outputBytes != null) {
+					outputStream.write(outputBytes);
+				}
+
+				inputStream.close();
+				outputStream.close();
 			}
 		}
-
-		byte[] outputBytes = cipher.doFinal();
-		if (outputBytes != null) {
-			outputStream.write(outputBytes);
-		}
-
-		inputStream.close();
-		outputStream.close();
 
 		log.info("FILE PROCESSED SUCCESFULLY IN " + outputFile.getName());
 	}
