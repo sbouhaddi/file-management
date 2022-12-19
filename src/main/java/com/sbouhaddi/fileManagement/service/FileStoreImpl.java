@@ -40,7 +40,7 @@ public class FileStoreImpl implements FileStore {
 	public void init() throws IOException, NoSuchAlgorithmException {
 
 		store = Paths.get(localStorePath);
-		log.info("FILES STORE " + store.toString());
+		log.info("FILES STORE " + localStorePath);
 		if (!Files.exists(store)) {
 			Files.createDirectories(store);
 		}
@@ -73,8 +73,10 @@ public class FileStoreImpl implements FileStore {
 		Path outputTargetLocation = store.resolve(Files.createTempFile(fileName, ""));
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
+		
 		EncryptionUtils.processFile(Cipher.DECRYPT_MODE, inputFile, outputFile);
 		log.info("FILE DECRYPTED IN  " + outputTargetLocation);
+		outputFile.deleteOnExit();
 		return new UrlResource(outputTargetLocation.toUri());
 	}
 
