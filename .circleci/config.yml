@@ -28,7 +28,7 @@ jobs:
           - v1-dependencies-
 
         # Install deps for Circle CI
-      - run: mvn install -Dskiptests
+      - run: mvn clean install -Dmaven.test.skip=true
       - run: mvn dependency:go-offline
 
       - save_cache:
