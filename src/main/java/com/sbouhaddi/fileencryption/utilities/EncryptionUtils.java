@@ -58,25 +58,24 @@ public class EncryptionUtils {
 
 		Cipher cipher = Cipher.getInstance(EncryptionConstants.AES_CIPHER.getValue());
 		cipher.init(encryptMode, key, iv);
-		try (FileInputStream inputStream = new FileInputStream(inputFile)) {
+		try (FileInputStream inputStream = new FileInputStream(inputFile);
+				FileOutputStream outputStream = new FileOutputStream(outputFile)) {
 
-			try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+			byte[] buffer = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				byte[] output = cipher.update(buffer, 0, bytesRead);
+				if (output != null) {
+					outputStream.write(output);
 
-				byte[] buffer = new byte[64];
-				int bytesRead;
-				while ((bytesRead = inputStream.read(buffer)) != -1) {
-					byte[] output = cipher.update(buffer, 0, bytesRead);
-					if (output != null) {
-						outputStream.write(output);
-
-					}
-				}
-
-				byte[] outputBytes = cipher.doFinal();
-				if (outputBytes != null) {
-					outputStream.write(outputBytes);
 				}
 			}
+
+			byte[] outputBytes = cipher.doFinal();
+			if (outputBytes != null) {
+				outputStream.write(outputBytes);
+			}
+
 		}
 
 		log.info("FILE PROCESSED SUCCESFULLY IN " + outputFile.getName());
