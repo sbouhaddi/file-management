@@ -52,7 +52,7 @@ public class FileStoreImpl implements FileStore {
 			NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
 		log.info("UPLOAD STARTED  ");
-		Path inputTargetLocation = Files.createTempFile("input", ".tmp");
+		Path inputTargetLocation = Files.createTempFile(store, "input", ".tmp");
 		Path outputTargetLocation = store.resolve(file.getOriginalFilename());
 		Files.copy(file.getInputStream(), inputTargetLocation, StandardCopyOption.REPLACE_EXISTING);
 		File inputFile = inputTargetLocation.toFile();
@@ -71,7 +71,7 @@ public class FileStoreImpl implements FileStore {
 
 		log.info("DOWNLOAD STARTED  ");
 		Path inputTargetLocation = store.resolve(fileName);
-		Path outputTargetLocation = store.resolve(Files.createTempFile("output", ".tmp"));
+		Path outputTargetLocation = store.resolve(Files.createTempFile(Path.of("/tmp", ""), "output", ".tmp"));
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
 
