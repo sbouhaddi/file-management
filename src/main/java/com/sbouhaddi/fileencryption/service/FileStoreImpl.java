@@ -6,9 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.crypto.BadPaddingException;
@@ -16,6 +20,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -71,7 +76,21 @@ public class FileStoreImpl implements FileStore {
 
 		log.info("DOWNLOAD STARTED  ");
 		Path inputTargetLocation = store.resolve(fileName);
-		Path outputTargetLocation = store.resolve(Files.createTempFile(Path.of("/tmp", ""), "output", ".tmp"));
+		Path tmpFile;
+
+		if (SystemUtils.IS_OS_UNIX) {
+			FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions
+					.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+			tmpFile = Files.createTempFile("output", ".tmp", attr);
+		} else {
+			File f = Files.createTempFile("output", ".tmp").toFile();
+			f.setReadable(true, true);
+			f.setWritable(true, true);
+			f.setExecutable(true, true);
+			tmpFile = f.toPath();
+		}
+
+		Path outputTargetLocation = store.resolve(tmpFile);
 		File inputFile = inputTargetLocation.toFile();
 		File outputFile = outputTargetLocation.toFile();
 
